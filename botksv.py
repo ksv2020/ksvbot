@@ -79,15 +79,15 @@ def get_text_messages(message):
                         curs = ",".join(curs)
                         avr.append(float(curs.replace(",",".")))
                         sum += avr[-1]
-                
-                bot.send_message(message.from_user.id, 'average:' + sum/len(avr))
+                average = sum/len(avr)
+                bot.send_message(message.from_user.id, f'average: {average}')
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
 
             except Exception:
                 # обрабатываем случай, что парсинг почему-то не завершился
                 parsed = False # меняем метку на False (если ошибка произошла после того как в прошлом пункте поменяли на True)
-                bot.send_message(message.from_user.id, "Произошла ошибка при парсинге. Попробуйте снова или смените страну.") # выдаем сообщение
+                bot.send_message(message.from_user.id, "Произошла ошибка при парсинге. Попробуйте снова или смените валюту.") # выдаем сообщение
         else:
             # сюда мы попадаем, если parsed == False
             # это else к тому if, где мы проверяли, что пользователь ввел название валюты, для которой мы умеем собирать данные
