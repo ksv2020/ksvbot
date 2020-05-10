@@ -56,7 +56,7 @@ def show_parse_help(message):
 def get_text_messages(message):
     global parsed
     if not parsed: # проверяем, что парсинг не произошел
-        if message.text in supported: # проверяем, что введенное сообщение является наименованием валюты, для которой можем сделать парсинг
+        if message.split()[0] in supported: # проверяем, что введенное сообщение является наименованием валюты, для которой можем сделать парсинг
             try: # пытаемся выполнить парсинг
                 bot.send_message(message.from_user.id, "Начинаю парсинг. Подождите...") # сообщаем пользователю, что начали работу
                 if message.split()[0] == 'USD': cur = 'R01235'
