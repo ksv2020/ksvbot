@@ -59,10 +59,10 @@ def get_text_messages(message):
         if message.text.split()[0] in supported: # проверяем, что введенное сообщение является наименованием валюты, для которой можем сделать парсинг
             try: # пытаемся выполнить парсинг
                 bot.send_message(message.from_user.id, "Начинаю парсинг. Подождите...") # сообщаем пользователю, что начали работу
-                if message.split()[0] == 'USD': cur = 'R01235'
-                elif message.split()[0] == 'EUR': cur = 'R01239'
+                if message.text.split()[0] == 'USD': cur = 'R01235'
+                elif message.text.split() == 'EUR': cur = 'R01239'
                 
-                date_cur = message.split()[1]
+                date_cur = message.text.split()[1]
 
                 url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur.lower()}&UniDbQuery.From={date_cur}&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
 
