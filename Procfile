@@ -1,1 +1,0 @@
-worker: python dpo_bot.py
