@@ -79,9 +79,8 @@ def get_text_messages(message):
                         curs = ",".join(curs)
                         avr.append(float(curs.replace(",",".")))
                         sum += avr[-1]
-                print('average:', sum/len(avr))               
-                # ниже привычный нам парсинг, единственное, используем str(graph) вместо graph.text,
-   
+                
+                bot.send_message(message.from_user.id, 'average:', sum/len(avr))
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
 
