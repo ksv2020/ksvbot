@@ -32,8 +32,7 @@ def show_start(message):
 @bot.message_handler(commands=['help'])
 def show_help(message):
     bot.send_message(message.from_user.id,"/parse - ввести валюту и запустить парсинг\n/parse_help - вывести список поддерживаемых валют\
-    \n/file - получить файл с данными\n/median - посчитать медиану для выбранной колонки\
-    \n/mean - посчитать среднее для выбранной колонки\n/date - получить информацию по конкретному дню")
+    \n/date - получить информацию по конкретному дню")
 
 # реагируем на команду /parse. Тут уже будем обновлять переменную parse.
 # если пользователь вызвал команду parse, будем задавать переменную parsed = False, чтобы считать, что парсинг еще не выполнен
@@ -41,7 +40,7 @@ def show_help(message):
 def parse(message):
     global parsed
     parsed = False
-    bot.send_message(message.from_user.id, "Введите код валюты на английском языке и дату: ") # запрашиваем название валюты
+    bot.send_message(message.from_user.id, "Введите код валюты: ") # запрашиваем название валюты
     
 # реагируем на команду /parse_help. Выводим валюты из списка, для которых можем собрать информацию    
 @bot.message_handler(commands=['parse_help'])
@@ -51,6 +50,7 @@ def show_parse_help(message):
 # реагируем на команду /date - выводим информацию о курсе валюты в определенный день, который вводит пользователь 
 @bot.message_handler(commands=['date'])
 def get_date(message):
+    bot.send_message(message.from_user.id, "Введите код валюты на английском языке и дату: ") # запрашиваем название валюты
     if message.split()[0] in supported:
         try: # пытаемся выполнить парсинг
             date_cur = message.split()[1]
