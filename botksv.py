@@ -3,7 +3,7 @@ import bs4
 import requests
 import re
 import pandas as pd
-import datetime
+#import datetime
 
 with open('token.txt') as fh: # в файле token.txt, который находится в одной папке с блокнотом, лежит строка токена и мы ее считываем
     token = fh.read().strip()
@@ -109,10 +109,10 @@ def get_text_messages(message):
                 elif message.text.split()[0] == 'JPY': cur = 'R01820'
                 elif message.text.split()[0] == 'CNY': cur = 'R01375'
                 
-                now = str(datetime.datetime.now()).split()[0].split('-')
-                date_cur = f'{now[2]}.{now[1]}.{now[0]}'
+#                now = str(datetime.datetime.now()).split()[0].split('-')
+#                date_cur = f'{now[2]}.{now[1]}.{now[0]}'
 
-                url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur.lower()}&UniDbQuery.From=01.07.1992&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
+                url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur.lower()}&UniDbQuery.From=01.07.1992&UniDbQuery.To=09.05.2020' # переходим по ссылке, для заданного
 
                 html = requests.get(url).text
                 soup = bs4.BeautifulSoup(html, 'lxml')
