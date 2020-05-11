@@ -120,6 +120,7 @@ def get_text_messages(message):
                 soup.find_all('td')
                 dates_curs = []
                 curs = []
+                nominal = []
                 for idx in soup.find_all('td'):
                     ex_cur = re.findall(r'\d\d\,\d{4}', str(idx)[4:-5])
                     dates = re.findall(r'\d\d\.\d\d\.\d{4}', str(idx)[4:-5])
@@ -129,11 +130,12 @@ def get_text_messages(message):
                     if dates != []: 
                         dates = ",".join(dates)
                         dates_curs.append(dates)
-
+                    if (str(idx)[4:-5]).isdigit():
+                        nominal.append(str(idx)[4:-5])
                 with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
-                    fh.write('date,curs\n') # записываем название колонок
+                    fh.write('date,curs,nominal\n') # записываем название колонок
                     for i in range(len(dates_curs)):
-                        fh.write(f'{dates_curs[i]},{curs[i]}\n') # записываем строки с данными для каждого ряда
+                        fh.write(f'{dates_curs[i]},{curs[i]},{nominal[i]}\n') # записываем строки с данными для каждого ряда
 
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
