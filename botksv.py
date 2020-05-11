@@ -50,11 +50,14 @@ def show_parse_help(message):
 # реагируем на команду /date - выводим информацию о курсе валюты в определенный день, который вводит пользователь 
 @bot.message_handler(commands=['date'])
 def get_date(message):
-    bot.send_message(message.from_user.id, "Введите код валюты на английском языке и дату: ") # запрашиваем название валюты
-    if message.split()[0] in supported:
+    col = message.text.split() # мы ожидаем сообщение в формате '/date Feb 02', разбиваем по пробелам
+    if len(col) != 3: # топорно обрабатываем ошибку, если в разбитом сообщение не три элемента (команда, месяц и дата)
+        bot.send_message(message.from_user.id, "Дата не указана.")
+
+    if message.split()[1] in supported:
         try: # пытаемся выполнить парсинг
             bot.send_message(message.from_user.id, "Начинаю парсинг. Подождите...") # сообщаем пользователю, что начали работу
-            date_cur = message.split()[1]
+            date_cur = message.split()[2]
 
             url = f'http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To={date_cur}'
 
@@ -64,15 +67,15 @@ def get_date(message):
             soup.find_all('td')
             exch = []
             for idx in soup.find_all('td'):
-                if str(idx)[4:-5] == message.split()[0]:
+                if str(idx)[4:-5] == message.split()[1]:
                     exch.append(str(idx)[4:-5])
                 if  len(exch) != 0:
                     exch.append(str(idx)[4:-5])
                 if  len(exch) == 5: break
 
-            print(f'Курс {message.split()[0]}/RUB на {date_cur}: {exch[4]}')
+            print(f'Курс {message.split()[1]}/RUB на {date_cur}: {exch[4]}')
             # выводим сообщение с информацией
-            bot.send_message(message.from_user.id, f'Курс {message.split()[0]}/RUB на {date_cur}: {exch[4]}')
+            bot.send_message(message.from_user.id, f'Курс {message.split()[1]}/RUB на {date_cur}: {exch[4]}')
         except Exception:
             # выводим информацию об ошибке в дате
             bot.send_message(message.from_user.id, "Ошибка в дате или дата не доступна, попробуйте еще раз.")
