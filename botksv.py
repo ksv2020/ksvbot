@@ -63,9 +63,9 @@ def get_file(message):
 # реагируем на команду /date - выводим информацию о курсе валюты в определенный день, который вводит пользователь 
 @bot.message_handler(commands=['date'])
 def get_date(message):
-    col = message.text.split() # мы ожидаем сообщение в формате '/date USD 20.03.2020', разбиваем по пробелам
-    if len(col) != 3: # топорно обрабатываем ошибку, если в разбитом сообщение не три элемента (команда, месяц и дата)
-        bot.send_message(message.from_user.id, "Дата не указана.")
+#    col = message.text.split() # мы ожидаем сообщение в формате '/date USD 20.03.2020', разбиваем по пробелам
+#    if len(col) != 3: # топорно обрабатываем ошибку, если в разбитом сообщение не три элемента (команда, месяц и дата)
+#        bot.send_message(message.from_user.id, "Дата не указана.")
 
     if message.text.split()[1] in supported:
         try: # пытаемся выполнить парсинг
