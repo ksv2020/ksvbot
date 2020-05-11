@@ -25,7 +25,7 @@ def show_start(message):
     # объект message - это сообщение от пользователя, в этом классе есть атрибут с метадатой
     # из которого мы достаем id пользователя, который его отправил и отвечаем этому пользователю
     bot.send_message(message.from_user.id, "Добрый день. Я умею работать с сайтом https://www.cbr.ru/currency_base/\
-Если вы введете валюту и дату я сообщу ее курс к рублю\
+Если вы введете валюту и дату я сообщу ее курс ЦБ РФ к рублю\
 Чтобы посмотреть все команды нажмите /help. Для начала парсинга нажмите /parse. Для просмотра доступных валют для парсинга нажмите /parse_help.")
 
 # все то же, что выше, только реагируем на команду /help
@@ -48,13 +48,39 @@ def parse(message):
 def show_parse_help(message):
     bot.send_message(message.from_user.id, f"Пока я могу собрать информацию только для этих валют:\n {' '.join(supported)}")
     
-# реагируем на команду /file, если parsed = True, т.е. парсинг завершен, то будем высылать пользователю файл с собранной информацией    
 # реагируем на команду /date - выводим информацию о курсе валюты в определенный день, который вводит пользователь 
+@bot.message_handler(commands=['date'])
+def get_date(message):
+    if message.split()[0] in supported:
+        try: # пытаемся выполнить парсинг
+            date_cur = message.split()[1]
+
+            url = f'http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To={date_cur}'
+
+            html = requests.get(url).text
+            soup = bs4.BeautifulSoup(html, 'lxml')
+            soup.find_all('table')
+            soup.find_all('td')
+            exch = []
+            for idx in soup.find_all('td'):
+                if str(idx)[4:-5] == message.split()[0]:
+                    exch.append(str(idx)[4:-5])
+                if  len(exch) != 0:
+                    exch.append(str(idx)[4:-5])
+                if  len(exch) == 5: break
+
+            print(f'Курс {message.split()[0]}/RUB на {date_cur}: {exch[4]}')
+            # выводим сообщение с информацией
+            bot.send_message(message.from_user.id, f'Курс {message.split()[0]}/RUB на {date_cur}: {exch[4]}')
+        except Exception:
+            # выводим информацию об ошибке в дате
+            bot.send_message(message.from_user.id, "Ошибка в дате или дата не доступна, попробуйте еще раз.")
     
 # Обабатываем все остальные сообщения от пользователя, которые не являются командами, прописанными выше
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     global parsed
+    bot.send_message(message.from_user.id, "Введите код валюты на английском языке и дату: ") # запрашиваем название валюты
     if not parsed: # проверяем, что парсинг не произошел
         if message.text.split()[0] in supported: # проверяем, что введенное сообщение является наименованием валюты, для которой можем сделать парсинг
             try: # пытаемся выполнить парсинг
@@ -63,8 +89,7 @@ def get_text_messages(message):
                 elif message.text.split()[0] == 'EUR': cur = 'R01239'
                 
                 date_cur = message.text.split()[1]
-
-                url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur.lower()}&UniDbQuery.From={date_cur}&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
+                url = f'http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To={date_cur}'
 
                 html = requests.get(url).text
                 soup = bs4.BeautifulSoup(html, 'lxml')
