@@ -53,6 +53,7 @@ def get_date(message):
     bot.send_message(message.from_user.id, "Введите код валюты на английском языке и дату: ") # запрашиваем название валюты
     if message.split()[0] in supported:
         try: # пытаемся выполнить парсинг
+            bot.send_message(message.from_user.id, "Начинаю парсинг. Подождите...") # сообщаем пользователю, что начали работу
             date_cur = message.split()[1]
 
             url = f'http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To={date_cur}'
@@ -80,7 +81,7 @@ def get_date(message):
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     global parsed
-    bot.send_message(message.from_user.id, "Введите код валюты на английском языке и дату: ") # запрашиваем название валюты
+    bot.send_message(message.from_user.id, "Введите код валюты: ") # запрашиваем название валюты
     if not parsed: # проверяем, что парсинг не произошел
         if message.text.split()[0] in supported: # проверяем, что введенное сообщение является наименованием валюты, для которой можем сделать парсинг
             try: # пытаемся выполнить парсинг
