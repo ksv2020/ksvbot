@@ -60,7 +60,7 @@ def get_text_messages(message):
             try: # пытаемся выполнить парсинг
                 bot.send_message(message.from_user.id, "Начинаю парсинг. Подождите...") # сообщаем пользователю, что начали работу
                 if message.text.split()[0] == 'USD': cur = 'R01235'
-                elif message.text.split() == 'EUR': cur = 'R01239'
+                elif message.text.split()[0] == 'EUR': cur = 'R01239'
                 
                 date_cur = message.text.split()[1]
 
