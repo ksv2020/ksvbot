@@ -69,7 +69,6 @@ def get_date(message):
 
     if message.text.split()[1] in supported:
         try: # пытаемся выполнить парсинг
-            bot.send_message(message.from_user.id, "Начинаю парсинг. Подождите...") # сообщаем пользователю, что начали работу
             date_cur = message.text.split()[2]
             url = f'http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To={date_cur}'
             html = requests.get(url).text
@@ -140,8 +139,7 @@ def get_text_messages(message):
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
                 bot.send_message(message.from_user.id, f'''/file - Получить файл с данными\ 
-                \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyy: например, 03 2020)\
-                \nДля {message.text} доступны данные в интервале {dates[0]} - {dates[-1]}''')
+                \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyy: например, 03 2020)''')
 
             except Exception:
                 # обрабатываем случай, что парсинг почему-то не завершился
