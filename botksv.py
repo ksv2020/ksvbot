@@ -3,7 +3,7 @@ import bs4
 import requests
 import re
 import pandas as pd
-import datetime
+#import datetime
 
 with open('token.txt') as fh: # в файле token.txt, который находится в одной папке с блокнотом, лежит строка токена и мы ее считываем
     token = fh.read().strip()
@@ -98,7 +98,6 @@ def get_date(message):
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     global parsed
-    bot.send_message(message.from_user.id, "Введите код валюты: ") # запрашиваем название валюты
     if not parsed: # проверяем, что парсинг не произошел
         if message.text.split()[0] in supported: # проверяем, что введенное сообщение является наименованием валюты, для которой можем сделать парсинг
             try: # пытаемся выполнить парсинг
@@ -112,7 +111,7 @@ def get_text_messages(message):
                 now = str(datetime.datetime.now()).split()[0].split('-')
                 date_cur = f'{now[2]}.{now[1]}.{now[0]}'
 
-                url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur.lower()}&UniDbQuery.From=01.07.1992&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
+                url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur}&UniDbQuery.From=01.07.1992&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
 
                 html = requests.get(url).text
                 soup = bs4.BeautifulSoup(html, 'lxml')
@@ -139,7 +138,7 @@ def get_text_messages(message):
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
                 bot.send_message(message.from_user.id, f'''/file - Получить файл с данными\ 
-                \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyy: например, 03 2020)''')
+                \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyyy: например, 03 2020)''')
 
             except Exception:
                 # обрабатываем случай, что парсинг почему-то не завершился
