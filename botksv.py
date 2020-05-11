@@ -3,6 +3,7 @@ import bs4
 import requests
 import re
 import pandas as pd
+import datetime
 
 with open('token.txt') as fh: # в файле token.txt, который находится в одной папке с блокнотом, лежит строка токена и мы ее считываем
     token = fh.read().strip()
@@ -13,7 +14,7 @@ bot = telebot.TeleBot(token)
 # Задаю переменную, чтобы проверять произошел ли уже парсинг или нет
 parsed = False
 # Задаю переменную со списком валют, которые поддерживает мой бот
-supported = ['USD', 'EUR']
+supported = ['USD', 'EUR', 'GBP', 'JPY', 'CNY']
 
 # Команды
 
@@ -32,7 +33,7 @@ def show_start(message):
 @bot.message_handler(commands=['help'])
 def show_help(message):
     bot.send_message(message.from_user.id,"/parse - ввести валюту и запустить парсинг\n/parse_help - вывести список поддерживаемых валют\
-    \n/date - получить информацию по конкретному дню")
+    \n/date - получить курс валюты к рублю на дату. Ввод после команды Код_валюты dd.mm.yyyy")
 
 # реагируем на команду /parse. Тут уже будем обновлять переменную parse.
 # если пользователь вызвал команду parse, будем задавать переменную parsed = False, чтобы считать, что парсинг еще не выполнен
@@ -46,11 +47,23 @@ def parse(message):
 @bot.message_handler(commands=['parse_help'])
 def show_parse_help(message):
     bot.send_message(message.from_user.id, f"Пока я могу собрать информацию только для этих валют:\n {' '.join(supported)}")
+
+# реагируем на команду /file, если parsed = True, т.е. парсинг завершен, то будем высылать пользователю файл с собранной информацией    
+@bot.message_handler(commands=['file'])
+def get_file(message):
+    global parsed
+    if parsed: # проверяем, что парсинг завершился
+        fh = open('data.csv', 'rb') # наш файл, который после парсинга сохраняется локально или на сервере. Открываем его.
+        bot.send_document(message.from_user.id, fh) # отправляем файл, с которым работаем, пользователю
+        fh.close() # закрываем файл
+    else:
+        # если информация не собрана, то скажем об этом пользователю и подскажем, как запустить процесс
+        bot.send_message(message.from_user.id, "Парсинг не выполнен. Нажмите /parse чтобы это сделать") 
     
 # реагируем на команду /date - выводим информацию о курсе валюты в определенный день, который вводит пользователь 
 @bot.message_handler(commands=['date'])
 def get_date(message):
-    col = message.text.split() # мы ожидаем сообщение в формате '/date Feb 02', разбиваем по пробелам
+    col = message.text.split() # мы ожидаем сообщение в формате '/date USD 20.03.2020', разбиваем по пробелам
     if len(col) != 3: # топорно обрабатываем ошибку, если в разбитом сообщение не три элемента (команда, месяц и дата)
         bot.send_message(message.from_user.id, "Дата не указана.")
 
@@ -58,9 +71,7 @@ def get_date(message):
         try: # пытаемся выполнить парсинг
             bot.send_message(message.from_user.id, "Начинаю парсинг. Подождите...") # сообщаем пользователю, что начали работу
             date_cur = message.text.split()[2]
-
             url = f'http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To={date_cur}'
-
             html = requests.get(url).text
             soup = bs4.BeautifulSoup(html, 'lxml')
             soup.find_all('table')
@@ -79,6 +90,10 @@ def get_date(message):
         except Exception:
             # выводим информацию об ошибке в дате
             bot.send_message(message.from_user.id, "Ошибка в дате или дата не доступна, попробуйте еще раз.")
+    else:
+        # это else к тому if, где мы проверяли, что пользователь ввел код валюты, для которой мы умеем собирать данные
+        show_parse_help(message) 
+        # показываем пользователю памятку со списком валют 
     
 # Обабатываем все остальные сообщения от пользователя, которые не являются командами, прописанными выше
 @bot.message_handler(content_types=['text'])
@@ -91,27 +106,42 @@ def get_text_messages(message):
                 bot.send_message(message.from_user.id, "Начинаю парсинг. Подождите...") # сообщаем пользователю, что начали работу
                 if message.text.split()[0] == 'USD': cur = 'R01235'
                 elif message.text.split()[0] == 'EUR': cur = 'R01239'
+                elif message.text.split()[0] == 'GBP': cur = 'R01035'
+                elif message.text.split()[0] == 'JPY': cur = 'R01820'
+                elif message.text.split()[0] == 'CNY': cur = 'R01375'
                 
-                date_cur = message.text.split()[1]
-                url = f'http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To={date_cur}'
+                now = str(datetime.datetime.now()).split()[0].split('-')
+                date_cur = f'{now[2]}.{now[1]}.{now[0]}'
+
+                url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur.lower()}&UniDbQuery.From=01.07.1992&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
 
                 html = requests.get(url).text
                 soup = bs4.BeautifulSoup(html, 'lxml')
                 soup.prettify()
                 soup.find_all('table')
                 soup.find_all('td')
-                avr = []
-                sum = 0
+                dates_curs = []
+                curs = []
                 for idx in soup.find_all('td'):
-                    curs = re.findall(r'\d\d\,\d{4}', str(idx)[4:-5])
-                    if curs != []: 
-                        curs = ",".join(curs)
-                        avr.append(float(curs.replace(",",".")))
-                        sum += avr[-1]
-                average = sum/len(avr)
-                bot.send_message(message.from_user.id, f'average: {average}')
+                    ex_cur = re.findall(r'\d\d\,\d{4}', str(idx)[4:-5])
+                    dates = re.findall(r'\d\d\.\d\d\.\d{4}', str(idx)[4:-5])
+                    if ex_cur != []: 
+                        ex_cur = ",".join(ex_cur)
+                        curs.append(float(ex_cur.replace(",",".")))
+                    if dates != []: 
+                        dates = ",".join(dates)
+                        dates_curs.append(dates)
+
+            with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
+                fh.write('date,curs\n') # записываем название колонок
+                for i in range(len(dates_curs)):
+                    fh.write(f'{dates_curs[i]},{curs[i]}\n') # записываем строки с данными для каждого ряда
+
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
+                bot.send_message(message.from_user.id, f'''/file - Получить файл с данными\ 
+                \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyy: например, 03 2020)\
+                \nДля {message.text} доступны данные в интервале {dates[0]} - {dates[-1]}''')
 
             except Exception:
                 # обрабатываем случай, что парсинг почему-то не завершился
