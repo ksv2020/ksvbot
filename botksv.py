@@ -132,16 +132,16 @@ def get_text_messages(message):
                         dates = ",".join(dates)
                         dates_curs.append(dates)
 
-            with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
-                fh.write('date,curs\n') # записываем название колонок
-                for i in range(len(dates_curs)):
-                    fh.write(f'{dates_curs[i]},{curs[i]}\n') # записываем строки с данными для каждого ряда
+                with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
+                    fh.write('date,curs\n') # записываем название колонок
+                    for i in range(len(dates_curs)):
+                        fh.write(f'{dates_curs[i]},{curs[i]}\n') # записываем строки с данными для каждого ряда
 
-                parsed = True # меняем метку parsed, если парсинг успешно завершилася
-                bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
-                bot.send_message(message.from_user.id, f'''/file - Получить файл с данными\ 
-                \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyy: например, 03 2020)\
-                \nДля {message.text} доступны данные в интервале {dates[0]} - {dates[-1]}''')
+                    parsed = True # меняем метку parsed, если парсинг успешно завершилася
+                    bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
+                    bot.send_message(message.from_user.id, f'''/file - Получить файл с данными\ 
+                    \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyy: например, 03 2020)\
+                    \nДля {message.text} доступны данные в интервале {dates[0]} - {dates[-1]}''')
 
             except Exception:
                 # обрабатываем случай, что парсинг почему-то не завершился
