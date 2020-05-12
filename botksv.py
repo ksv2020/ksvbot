@@ -25,8 +25,7 @@ def show_start(message):
     # метод класса send_message берет два аргумента - кому отправляем сообщение и сообщение, которое отправляем.
     # объект message - это сообщение от пользователя, в этом классе есть атрибут с метадатой
     # из которого мы достаем id пользователя, который его отправил и отвечаем этому пользователю
-    bot.send_message(message.from_user.id, "Добрый день. Я умею работать с сайтом https://www.cbr.ru/currency_base/\
-Если вы введете валюту и дату я сообщу ее курс ЦБ РФ к рублю\
+    bot.send_message(message.from_user.id, "Добрый день. Я умею работать с сайтом https://www.cbr.ru/currency_base/\Если вы введете валюту и дату я сообщу ее курс ЦБ РФ к рублю\
 Чтобы посмотреть все команды нажмите /help. Для начала парсинга нажмите /parse. Для просмотра доступных валют для парсинга нажмите /parse_help.")
 
 # все то же, что выше, только реагируем на команду /help
@@ -82,7 +81,6 @@ def get_date(message):
                 if  len(exch) != 0:
                     exch.append(str(idx)[4:-5])
                 if  len(exch) == 5: break
-
             print(f'Курс {message.text.split()[1]}/RUB на {date_cur}: {exch[4]}')
             # выводим сообщение с информацией
             bot.send_message(message.from_user.id, f'Курс {message.text.split()[1]}/RUB на {date_cur}: {exch[4]}')
