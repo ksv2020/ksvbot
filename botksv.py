@@ -114,15 +114,16 @@ def get_text_messages(message):
                 date_cur = f'{now[2]}.{now[1]}.{now[0]}'
 
                 url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur}&UniDbQuery.From=01.07.1992&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
-
+                        
                 html = requests.get(url).text
                 soup = bs4.BeautifulSoup(html, 'lxml')
-                soup.prettify()
                 soup.find_all('table')
                 soup.find_all('td')
                 dates_curs = []
                 curs = []
                 nominal = []
+                bot.send_message(message.from_user.id, "Test 1:") # сообщаем об этом пользователю
+
                 for idx in soup.find_all('td'):
                     ex_cur = re.findall(r'\d\d\,\d{4}', str(idx)[4:-5])
                     dates = re.findall(r'\d\d\.\d\d\.\d{4}', str(idx)[4:-5])
@@ -134,6 +135,9 @@ def get_text_messages(message):
                         dates_curs.append(dates)
                     if (str(idx)[4:-5]).isdigit():
                         nominal.append(str(idx)[4:-5])
+
+                bot.send_message(message.from_user.id, "Test 1:") # сообщаем об этом пользователю
+
                 with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
                     fh.write('date,curs,nominal\n') # записываем название колонок
                     for i in range(len(dates_curs)):
