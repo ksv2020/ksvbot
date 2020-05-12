@@ -136,12 +136,16 @@ def get_text_messages(message):
                     if (str(idx)[4:-5]).isdigit():
                         nominal.append(str(idx)[4:-5])
 
-                bot.send_message(message.from_user.id, "Test 1:") # сообщаем об этом пользователю
+                bot.send_message(message.from_user.id, "Test 2:") # сообщаем об этом пользователю
 
                 with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
                     fh.write('date,curs,nominal\n') # записываем название колонок
+                    bot.send_message(message.from_user.id, "Test 3:") # сообщаем об этом пользователю
+
                     for i in range(len(dates_curs)):
                         fh.write(f'{dates_curs[i]},{curs[i]},{nominal[i]}\n') # записываем строки с данными для каждого ряда
+                        bot.send_message(message.from_user.id, "Test 3:") # сообщаем об этом пользователю
+                        break
 
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
