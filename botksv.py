@@ -3,7 +3,7 @@ import bs4
 import requests
 import re
 import pandas as pd
-#import datetime
+import datetime
 
 with open('token.txt') as fh: # в файле token.txt, который находится в одной папке с блокнотом, лежит строка токена и мы ее считываем
     token = fh.read().strip()
