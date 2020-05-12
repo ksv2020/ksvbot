@@ -141,11 +141,11 @@ def get_text_messages(message):
                 with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
                     fh.write('date,curs,nominal\n') # записываем название колонок
                     bot.send_message(message.from_user.id, "Test 3:") # сообщаем об этом пользователю
+                    cnt = 0
 
                     for i in range(len(dates_curs)):
                         fh.write(f'{dates_curs[i]},{curs[i]},{nominal[i]}\n') # записываем строки с данными для каждого ряда
-                        bot.send_message(message.from_user.id, "Test 3:") # сообщаем об этом пользователю
-                        break
+                        cnt += 1
 
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
@@ -155,7 +155,7 @@ def get_text_messages(message):
             except Exception:
                 # обрабатываем случай, что парсинг почему-то не завершился
                 parsed = False # меняем метку на False (если ошибка произошла после того как в прошлом пункте поменяли на True)
-                bot.send_message(message.from_user.id, "Произошла ошибка при парсинге. Попробуйте снова или смените валюту.") # выдаем сообщение
+                bot.send_message(message.from_user.id, f'Произошла ошибка при парсинге. Попробуйте снова или смените валюту. cnt = {cnt} {dates_curs[i]}') # выдаем сообщение
         else:
             # сюда мы попадаем, если parsed == False
             # это else к тому if, где мы проверяли, что пользователь ввел название валюты, для которой мы умеем собирать данные
