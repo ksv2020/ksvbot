@@ -168,7 +168,7 @@ def get_text_messages(message):
 
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
-                    data = pd.read_csv('data.csv', delimiter = ',')
+                data = pd.read_csv('data.csv', delimiter = ',')
                 mea = data[2].mean()
                 bot.send_message(message.from_user.id, "Средний курс = " + str(mea))
 
