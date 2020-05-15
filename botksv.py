@@ -63,6 +63,26 @@ def get_file(message):
     else:
         # если информация не собрана, то скажем об этом пользователю и подскажем, как запустить процесс
         bot.send_message(message.from_user.id, "Парсинг не выполнен. Нажмите /parse чтобы это сделать") 
+
+# все то же самое, что выше только для арифметического среднего        
+@bot.message_handler(commands=['mean'])
+def get_mean(message):
+    global parsed
+    if parsed:
+        col = message.text.split()
+        if len(col) == 2:
+            if col[1] == 'cases':
+                col = 'number of daily cases'
+            else:
+                col = 'number of daily deaths'
+        else:
+            col = 'number of daily cases'
+            
+        data = pd.read_csv('data.csv', delimiter = ',')
+        mea = data[col].mean()
+        bot.send_message(message.from_user.id, "Среднее для колонки " + col + " = " + str(mea))
+    else:
+        bot.send_message(message.from_user.id, "Парсинг не выполнен. Нажмите /parse чтобы это сделать")
     
 # реагируем на команду /date - выводим информацию о курсе валюты в определенный день, который вводит пользователь 
 @bot.message_handler(commands=['date'])
@@ -148,6 +168,10 @@ def get_text_messages(message):
 
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
+                    data = pd.read_csv('data.csv', delimiter = ',')
+                mea = data[2].mean()
+                bot.send_message(message.from_user.id, "Средний курс = " + str(mea))
+
                 bot.send_message(message.from_user.id, f'''/file - Получить файл с данными\ 
                 \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyyy: например, 03 2020)''')
 
