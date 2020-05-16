@@ -154,7 +154,7 @@ def get_text_messages(message):
 
                 with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
                     fh.write('date,curs,nominal\n') # записываем название колонок
-                    bot.send_message(message.from_user.id, f'Test 3:{len(dates_curs)}') # сообщаем об этом пользователю
+                    bot.send_message(message.from_user.id, f'Test 3: не разберусь где ошибка, но сайт парсится до ошибки: {dates_curs}') # сообщаем об этом пользователю
 
                     for i in range(len(dates_curs)):
                         fh.write(f'{dates_curs[i]},{curs[i]},{nominal[i]}\n') # записываем строки с данными для каждого ряда
@@ -166,12 +166,11 @@ def get_text_messages(message):
                 bot.send_message(message.from_user.id, "Средний курс = " + str(mea))
 
                 bot.send_message(message.from_user.id, f'''/file - Получить файл с данными\ 
-                \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате mm и yyyy: например, 03 2020)''')
+                \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате yyyy-mm-dd: например, 2020-04-30)''')
 
             except Exception:
                 # обрабатываем случай, что парсинг почему-то не завершился
                 parsed = True # меняем метку на False (если ошибка произошла после того как в прошлом пункте поменяли на True)
-                bot.send_message(message.from_user.id, f'Произошла ошибка при парсинге. Попробуйте снова или смените валюту. date = {dates_curs[i]}') # выдаем сообщение
         else:
             # сюда мы попадаем, если parsed == False
             # это else к тому if, где мы проверяли, что пользователь ввел название валюты, для которой мы умеем собирать данные
