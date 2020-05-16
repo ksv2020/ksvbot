@@ -69,18 +69,9 @@ def get_file(message):
 def get_mean(message):
     global parsed
     if parsed:
-        col = message.text.split()
-        if len(col) == 2:
-            if col[1] == 'cases':
-                col = 'number of daily cases'
-            else:
-                col = 'number of daily deaths'
-        else:
-            col = 'number of daily cases'
-            
         data = pd.read_csv('data.csv', delimiter = ',')
-        mea = data[col].mean()
-        bot.send_message(message.from_user.id, "Среднее для колонки " + col + " = " + str(mea))
+        mea = data['curs'].mean()
+        bot.send_message(message.from_user.id, "Средний исторический курс = " + str(mea))
     else:
         bot.send_message(message.from_user.id, "Парсинг не выполнен. Нажмите /parse чтобы это сделать")
     
@@ -143,7 +134,6 @@ def get_text_messages(message):
                 dates_curs = []
                 curs = []
                 nominal = []
-                bot.send_message(message.from_user.id, "Test 1:") # сообщаем об этом пользователю
 
                 for idx in soup.find_all('td'):
                     ex_cur = re.findall(r'\d\d\,\d{4}', str(idx)[4:-5])
@@ -156,8 +146,6 @@ def get_text_messages(message):
                         dates_curs.append(dates)
                     if (str(idx)[4:-5]).isdigit():
                         nominal.append(str(idx)[4:-5])
-
-                bot.send_message(message.from_user.id, "Test 2:") # сообщаем об этом пользователю
 
                 with open('data.csv', 'w') as fh: # открываем файл, чтобы сохранить в него собранную информацию
                     fh.write('date,curs,nominal\n') # записываем название колонок
@@ -178,7 +166,7 @@ def get_text_messages(message):
             except Exception:
                 # обрабатываем случай, что парсинг почему-то не завершился
                 parsed = True # меняем метку на False (если ошибка произошла после того как в прошлом пункте поменяли на True)
-                bot.send_message(message.from_user.id, f'Произошла ошибка при парсинге. Попробуйте снова или смените валюту. i = {i} date = {dates_curs[i]}') # выдаем сообщение
+                bot.send_message(message.from_user.id, f'Произошла ошибка при парсинге. Попробуйте снова или смените валюту. date = {dates_curs[i]}') # выдаем сообщение
         else:
             # сюда мы попадаем, если parsed == False
             # это else к тому if, где мы проверяли, что пользователь ввел название валюты, для которой мы умеем собирать данные
