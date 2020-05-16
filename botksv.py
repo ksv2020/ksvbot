@@ -70,6 +70,7 @@ def get_mean(message):
     global parsed
     col = message.text.split()
     if parsed:
+        data = pd.read_csv('data.csv', delimiter = ',')
         data['date'] = pd.to_datetime(data['date'], format='%d.%m.%Y')
         res = (data.groupby(pd.Grouper(key='date', freq='M'))['curs'].mean().reset_index(name='Avg'))
         period = col[1]
