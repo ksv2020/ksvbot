@@ -161,10 +161,6 @@ def get_text_messages(message):
 
                 parsed = True # меняем метку parsed, если парсинг успешно завершилася
                 bot.send_message(message.from_user.id, "Парсинг успешно закончен. Выберите следующую команду:") # сообщаем об этом пользователю
-                data = pd.read_csv('data.csv', delimiter = ',')
-                mea = data[2].mean()
-                bot.send_message(message.from_user.id, "Средний курс = " + str(mea))
-
                 bot.send_message(message.from_user.id, f'''/file - Получить файл с данными\ 
                 \n/mean - Посчитать среднее. После команды через пробел напишите месяц и год в формате yyyy-mm-dd: например, 2020-04-30)''')
 
