@@ -28,16 +28,16 @@ def show_start(message):
     bot.send_message(message.from_user.id, "Добрый день. Я умею работать с сайтом https://www.cbr.ru/currency_base/.\
 Если вы введете название валюты, то я соберу данные по всей истории курсов данной валюты:\
 После того, как я соберу данные, я смогу вывести следующую информацию: \
-ввывести средний курс валюты за выбранный месяц, вывести волатильность курса валюты за указанный период \
-вывести курс валюты на выбранную дату \
-Чтобы посмотреть все команды нажмите /help. Для начала парсинга нажмите /parse. Для просмотра доступных стран для парсинга нажмите /parse_help.")
+средний курс валюты за выбранный месяц, волатильность курса валюты за указанный период \
+курс валюты на выбранную дату \
+Чтобы посмотреть все команды нажмите /help. Для начала парсинга нажмите /parse. Для просмотра доступных валют введеите /parse_help.")
 
 # все то же, что выше, только реагируем на команду /help
 @bot.message_handler(commands=['help'])
 def show_help(message):
     bot.send_message(message.from_user.id,"/parse - ввести валюту и запустить парсинг\n/parse_help - вывести список поддерживаемых валют\
-    \n/file - получить файл с данными\n/median - посчитать медиану для выбранной колонки\
-    \n/date - получить курс валюты к рублю на дату. Ввод после команды Код_валюты dd.mm.yyyy")
+    \n/file - получить файл с данными\n/mean - посчитать среднее значение для выбранной валюты\
+    \n/date - получить курс валюты к рублю на дату. Формат ввода после команды: код_валюты dd.mm.yyyy")
 
 # реагируем на команду /parse. Тут уже будем обновлять переменную parse.
 # если пользователь вызвал команду parse, будем задавать переменную parsed = False, чтобы считать, что парсинг еще не выполнен
@@ -68,10 +68,14 @@ def get_file(message):
 @bot.message_handler(commands=['mean'])
 def get_mean(message):
     global parsed
+    col = message.text.split()
     if parsed:
-        data = pd.read_csv('data.csv', delimiter = ',')
-        mea = data['curs'].mean()
-        bot.send_message(message.from_user.id, "Средний исторический курс = " + str(mea))
+        data['date'] = pd.to_datetime(data['date'], format='%d.%m.%Y')
+        res = (data.groupby(pd.Grouper(key='date', freq='M'))['curs'].mean().reset_index(name='Avg'))
+        period = col[1]
+        mea = round(res.loc[res.date == period, 'Avg'].values[0], 4)
+
+        bot.send_message(message.from_user.id, "Средний курс = " + str(mea))
     else:
         bot.send_message(message.from_user.id, "Парсинг не выполнен. Нажмите /parse чтобы это сделать")
     
