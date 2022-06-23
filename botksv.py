@@ -14,7 +14,7 @@ bot = telebot.TeleBot(token)
 # Задаю переменную, чтобы проверять произошел ли уже парсинг или нет
 parsed = False
 # Задаю переменную со списком валют, которые поддерживает мой бот
-supported = ['USD', 'EUR']
+supported = ['USD', 'EUR', 'GBP', 'JPY', 'CNY']
 
 # Команды
 
@@ -25,11 +25,12 @@ def show_start(message):
     # метод класса send_message берет два аргумента - кому отправляем сообщение и сообщение, которое отправляем.
     # объект message - это сообщение от пользователя, в этом классе есть атрибут с метадатой
     # из которого мы достаем id пользователя, который его отправил и отвечаем этому пользователю
-    bot.send_message(message.from_user.id, "Добрый день. Я умею работать с сайтом https://www.cbr.ru/currency_base/.\
-Если вы введете название валюты, то я соберу данные по всей истории курсов данной валюты:\
+    bot.send_message(message.from_user.id, "Привет. Я умею работать с сайтом https://www.cbr.ru/currency_base/. \
+Если вы введете название валюты, то я соберу данные по всей истории курсов данной валюты.\
 После того, как я соберу данные, я смогу вывести следующую информацию: \
-средний курс валюты за выбранный месяц,\
-курс валюты на выбранную дату \
+средний курс валюты за выбранный месяц, \
+курс валюты на выбранную дату. \
+ \
 Чтобы посмотреть все команды нажмите /help. Для начала парсинга нажмите /parse. Для просмотра доступных валют введеите /parse_help.")
 
 # все то же, что выше, только реагируем на команду /help
@@ -130,7 +131,7 @@ def get_text_messages(message):
                 now = str(datetime.datetime.now()).split()[0].split('-')
                 date_cur = f'{now[2]}.{now[1]}.{now[0]}'
 
-                url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur}&UniDbQuery.From=01.07.1992&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
+                url = f'http://www.cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ={cur}&UniDbQuery.From=01.07.2000&UniDbQuery.To={date_cur}' # переходим по ссылке, для заданного
                         
                 html = requests.get(url).text
                 soup = bs4.BeautifulSoup(html, 'lxml')
